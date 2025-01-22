@@ -70,6 +70,13 @@ resource "aws_cloudfront_distribution" "simple_static_website" {
     viewer_protocol_policy = "redirect-to-https"
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]
+    forwarded_values {
+      query_string = var.cloudfront_query_string_forwarding
+
+      cookies {
+        forward = "none"
+      }
+    }
   }
 
   ordered_cache_behavior {
@@ -78,6 +85,13 @@ resource "aws_cloudfront_distribution" "simple_static_website" {
     viewer_protocol_policy = "redirect-to-https"
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]
+    forwarded_values {
+      query_string = var.cloudfront_query_string_forwarding
+
+      cookies {
+        forward = "none"
+      }
+    }
   }
 
   dynamic "custom_error_response" {
