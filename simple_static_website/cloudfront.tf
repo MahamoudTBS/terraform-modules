@@ -64,6 +64,22 @@ resource "aws_cloudfront_distribution" "simple_static_website" {
     max_ttl                = 86400
   }
 
+  ordered_cache_behavior {
+    path_pattern           = "gciv/*"
+    target_origin_id       = "simple_static_website"
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["GET", "HEAD"]
+    cached_methods         = ["GET", "HEAD"]
+  }
+
+  ordered_cache_behavior {
+    path_pattern           = "trust-registry/*"
+    target_origin_id       = "simple_static_website"
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["GET", "HEAD"]
+    cached_methods         = ["GET", "HEAD"]
+  }
+
   dynamic "custom_error_response" {
     for_each = var.single_page_app ? [
       {
