@@ -68,7 +68,7 @@ resource "aws_cloudfront_distribution" "simple_static_website" {
     path_pattern           = "gciv/*"
     target_origin_id       = "simple_static_website"
     viewer_protocol_policy = "redirect-to-https"
-    allowed_methods        = ["GET", "HEAD"]
+    allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods         = ["GET", "HEAD"]
     forwarded_values {
       query_string = var.cloudfront_query_string_forwarding
@@ -77,13 +77,16 @@ resource "aws_cloudfront_distribution" "simple_static_website" {
         forward = "none"
       }
     }
+    min_ttl     = 0
+    default_ttl = 86400
+    max_ttl     = 86400
   }
 
   ordered_cache_behavior {
     path_pattern           = "trust-registry/*"
     target_origin_id       = "simple_static_website"
     viewer_protocol_policy = "redirect-to-https"
-    allowed_methods        = ["GET", "HEAD"]
+    allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods         = ["GET", "HEAD"]
     forwarded_values {
       query_string = var.cloudfront_query_string_forwarding
@@ -92,6 +95,9 @@ resource "aws_cloudfront_distribution" "simple_static_website" {
         forward = "none"
       }
     }
+    min_ttl     = 0
+    default_ttl = 86400
+    max_ttl     = 86400
   }
 
   dynamic "custom_error_response" {
