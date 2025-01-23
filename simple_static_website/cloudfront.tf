@@ -65,7 +65,7 @@ resource "aws_cloudfront_distribution" "simple_static_website" {
   }
 
   ordered_cache_behavior {
-    path_pattern           = "gciv/*"
+    path_pattern           = "/gciv/*"
     target_origin_id       = "simple_static_website"
     viewer_protocol_policy = "redirect-to-https"
     allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
@@ -83,7 +83,7 @@ resource "aws_cloudfront_distribution" "simple_static_website" {
   }
 
   ordered_cache_behavior {
-    path_pattern           = "trust-registry/*"
+    path_pattern           = "/trust-registry/*"
     target_origin_id       = "simple_static_website"
     viewer_protocol_policy = "redirect-to-https"
     allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
