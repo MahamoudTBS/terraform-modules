@@ -24,6 +24,43 @@ resource "aws_cloudfront_distribution" "simple_static_website" {
   aliases     = [var.domain_name_source]
   price_class = var.cloudfront_price_class
 
+
+  ordered_cache_behavior {
+    path_pattern           = "/gciv/*"
+    target_origin_id       = "api_docs"
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods         = ["GET", "HEAD"]
+    forwarded_values {
+      query_string = var.cloudfront_query_string_forwarding
+
+      cookies {
+        forward = "none"
+      }
+    }
+    min_ttl     = 0
+    default_ttl = 86400
+    max_ttl     = 86400
+  }
+
+  ordered_cache_behavior {
+    path_pattern           = "/trust-registry/*"
+    target_origin_id       = "api_docs"
+    viewer_protocol_policy = "redirect-to-https"
+    allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods         = ["GET", "HEAD"]
+    forwarded_values {
+      query_string = var.cloudfront_query_string_forwarding
+
+      cookies {
+        forward = "none"
+      }
+    }
+    min_ttl     = 0
+    default_ttl = 86400
+    max_ttl     = 86400
+  }
+
   default_cache_behavior {
     target_origin_id = "api_docs"
 
@@ -63,42 +100,6 @@ resource "aws_cloudfront_distribution" "simple_static_website" {
     min_ttl                = 0
     default_ttl            = 86400
     max_ttl                = 86400
-  }
-
-  ordered_cache_behavior {
-    path_pattern           = "/gciv/*"
-    target_origin_id       = "api_docs"
-    viewer_protocol_policy = "redirect-to-https"
-    allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-    cached_methods         = ["GET", "HEAD"]
-    forwarded_values {
-      query_string = var.cloudfront_query_string_forwarding
-
-      cookies {
-        forward = "none"
-      }
-    }
-    min_ttl     = 0
-    default_ttl = 86400
-    max_ttl     = 86400
-  }
-
-  ordered_cache_behavior {
-    path_pattern           = "/trust-registry/*"
-    target_origin_id       = "api_docs"
-    viewer_protocol_policy = "redirect-to-https"
-    allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-    cached_methods         = ["GET", "HEAD"]
-    forwarded_values {
-      query_string = var.cloudfront_query_string_forwarding
-
-      cookies {
-        forward = "none"
-      }
-    }
-    min_ttl     = 0
-    default_ttl = 86400
-    max_ttl     = 86400
   }
 
   dynamic "custom_error_response" {
