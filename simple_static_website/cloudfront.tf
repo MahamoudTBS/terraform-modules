@@ -25,41 +25,41 @@ resource "aws_cloudfront_distribution" "simple_static_website" {
   price_class = var.cloudfront_price_class
 
 
-  ordered_cache_behavior {
-    path_pattern           = "/gciv/*"
-    target_origin_id       = "api_docs"
-    viewer_protocol_policy = "redirect-to-https"
-    allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-    cached_methods         = ["GET", "HEAD"]
-    forwarded_values {
-      query_string = var.cloudfront_query_string_forwarding
+  # ordered_cache_behavior {
+  #   path_pattern           = "/gciv/*"
+  #   target_origin_id       = "api_docs"
+  #   viewer_protocol_policy = "redirect-to-https"
+  #   allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+  #   cached_methods         = ["GET", "HEAD"]
+  #   forwarded_values {
+  #     query_string = var.cloudfront_query_string_forwarding
 
-      cookies {
-        forward = "none"
-      }
-    }
-    min_ttl     = 0
-    default_ttl = 86400
-    max_ttl     = 86400
-  }
+  #     cookies {
+  #       forward = "none"
+  #     }
+  #   }
+  #   min_ttl     = 0
+  #   default_ttl = 86400
+  #   max_ttl     = 86400
+  # }
 
-  ordered_cache_behavior {
-    path_pattern           = "/trust-registry/*"
-    target_origin_id       = "api_docs"
-    viewer_protocol_policy = "redirect-to-https"
-    allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-    cached_methods         = ["GET", "HEAD"]
-    forwarded_values {
-      query_string = var.cloudfront_query_string_forwarding
+  # ordered_cache_behavior {
+  #   path_pattern           = "/trust-registry/*"
+  #   target_origin_id       = "api_docs"
+  #   viewer_protocol_policy = "redirect-to-https"
+  #   allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+  #   cached_methods         = ["GET", "HEAD"]
+  #   forwarded_values {
+  #     query_string = var.cloudfront_query_string_forwarding
 
-      cookies {
-        forward = "none"
-      }
-    }
-    min_ttl     = 0
-    default_ttl = 86400
-    max_ttl     = 86400
-  }
+  #     cookies {
+  #       forward = "none"
+  #     }
+  #   }
+  #   min_ttl     = 0
+  #   default_ttl = 86400
+  #   max_ttl     = 86400
+  # }
 
   default_cache_behavior {
     target_origin_id = "api_docs"
@@ -106,6 +106,23 @@ resource "aws_cloudfront_distribution" "simple_static_website" {
     for_each = var.single_page_app ? [
       {
         error_code            = 403,
+        response_page_path    = "/${var.index_document}",
+        error_caching_min_ttl = 300,
+        response_code         = 200
+      }
+    ] : var.custom_error_responses
+    content {
+      error_code            = custom_error_response.value.error_code
+      error_caching_min_ttl = custom_error_response.value.error_caching_min_ttl != null ? custom_error_response.value.error_caching_min_ttl : 300
+      response_code         = custom_error_response.value.response_code != null ? custom_error_response.value.response_code : 200
+      response_page_path    = custom_error_response.value.response_page_path
+    }
+  }
+
+  dynamic "custom_error_response" {
+    for_each = var.single_page_app ? [
+      {
+        error_code            = 404,
         response_page_path    = "/${var.index_document}",
         error_caching_min_ttl = 300,
         response_code         = 200
