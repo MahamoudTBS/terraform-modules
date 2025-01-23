@@ -18,24 +18,6 @@ resource "aws_cloudfront_distribution" "simple_static_website" {
     }
   }
 
-  origin {
-    domain_name = aws_s3_bucket.this.bucket_regional_domain_name
-    origin_id   = "api_docs"
-
-    s3_origin_config {
-      origin_access_identity = aws_cloudfront_origin_access_identity.simple_static_website.cloudfront_access_identity_path
-    }
-  }
-
-  origin {
-    domain_name = aws_s3_bucket.this.bucket_regional_domain_name
-    origin_id   = "api_docs"
-
-    s3_origin_config {
-      origin_access_identity = aws_cloudfront_origin_access_identity.simple_static_website.cloudfront_access_identity_path
-    }
-  }
-
   default_root_object = var.index_document
 
   enabled     = true
