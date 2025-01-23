@@ -11,7 +11,25 @@ resource "aws_cloudfront_distribution" "simple_static_website" {
 
   origin {
     domain_name = aws_s3_bucket.this.bucket_regional_domain_name
-    origin_id   = "simple_static_website"
+    origin_id   = "root_website_origin"
+
+    s3_origin_config {
+      origin_access_identity = aws_cloudfront_origin_access_identity.simple_static_website.cloudfront_access_identity_path
+    }
+  }
+
+  origin {
+    domain_name = aws_s3_bucket.this.bucket_regional_domain_name
+    origin_id   = "gciv_origin"
+
+    s3_origin_config {
+      origin_access_identity = aws_cloudfront_origin_access_identity.simple_static_website.cloudfront_access_identity_path
+    }
+  }
+
+  origin {
+    domain_name = aws_s3_bucket.this.bucket_regional_domain_name
+    origin_id   = "trust_registry_origin"
 
     s3_origin_config {
       origin_access_identity = aws_cloudfront_origin_access_identity.simple_static_website.cloudfront_access_identity_path
@@ -25,10 +43,11 @@ resource "aws_cloudfront_distribution" "simple_static_website" {
   price_class = var.cloudfront_price_class
 
   default_cache_behavior {
-    target_origin_id = "simple_static_website"
-    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-    cached_methods   = ["GET", "HEAD"]
-    compress         = true
+    target_origin_id = "root_website_origin"
+
+    allowed_methods = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods  = ["GET", "HEAD"]
+    compress        = true
 
     forwarded_values {
       query_string = var.cloudfront_query_string_forwarding
@@ -66,7 +85,7 @@ resource "aws_cloudfront_distribution" "simple_static_website" {
 
   ordered_cache_behavior {
     path_pattern           = "/gciv/*"
-    target_origin_id       = "simple_static_website"
+    target_origin_id       = "gciv_origin"
     viewer_protocol_policy = "redirect-to-https"
     allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods         = ["GET", "HEAD"]
@@ -84,7 +103,7 @@ resource "aws_cloudfront_distribution" "simple_static_website" {
 
   ordered_cache_behavior {
     path_pattern           = "/trust-registry/*"
-    target_origin_id       = "simple_static_website"
+    target_origin_id       = "trust_registry_origin"
     viewer_protocol_policy = "redirect-to-https"
     allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods         = ["GET", "HEAD"]
